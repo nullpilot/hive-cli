@@ -10,9 +10,9 @@ program
 
 program.command('client')
   .description('Connect a local work-server to Hive DPoW')
-  .addOption(new Option('--address <paw_address>', 'PAW address that rewards will be paid to').env('HIVE_CLIENT_ADDRESS'))
-  .option('--ws-host [url]', 'host of the work server', 'http://localhost:4500/')
-  .option('--hive-host [url]', 'host of the Hive DPoW instance', 'https://dpow.pawmon.live/')
+  .addOption(new Option('--paw-address <address>', 'PAW address that rewards will be paid to').env('HIVE_CLIENT_ADDRESS'))
+  .option('--work-server [url]', 'location of the work server', 'http://localhost:4500/')
+  .option('--hive-endpoint [url]', 'endpoint of the target Hive instance', 'wss://dpow.pawmon.live/websocket')
   .action(clientHandler);
 
 program.parse();

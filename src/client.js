@@ -2,19 +2,26 @@ import WebSocket from 'ws';
 import got from 'got';
 
 let workServer;
-let hiveEndpoint;
+let hiveSocket;
 let pawAddress;
 let ws;
 
 export default function clientHandler(options) {
   pawAddress = options.pawAddress;
-  workServer = options.workServer;
-  hiveEndpoint = options.hiveEndpoint;
+  hiveSocket = options.hiveSocket;
 
-  ws = new WebSocket(hiveEndpoint);
+  if(options.wsUrl) {
+    workServer = options.wsUrl
+  } else {
+    workServer = `http://localhost:${options.wsPort}/`
+  }
+
+  ws = new WebSocket(hiveSocket);
 
   ws.on('open', function open() {
     const init = {action: "work_subscribe"}
+
+    process.stdout.write(`Successfully joined the hive 🐝\n`);
 
     ws.send(JSON.stringify(init));
   });
@@ -30,7 +37,9 @@ export default function clientHandler(options) {
     }
   });
 
-  process.stdout.write(`Connecting to Hive DPoW as ${pawAddress}\n`);
+  process.stdout.write(`Reward address set to ${pawAddress}\n`);
+  process.stdout.write(`Connecting to Hive DPoW at ${hiveSocket}\n`);
+  process.stdout.write(`Forwarding PoW requests to work-server at ${workServer}\n`);
 }
 
 function handleEvent(action, data) {

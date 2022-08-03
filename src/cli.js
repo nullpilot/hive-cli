@@ -13,9 +13,10 @@ program
 
 program.command('client')
   .description('Connect a local work-server to Hive DPoW')
-  .addOption(new Option('--paw-address <address>', 'PAW address that rewards will be paid to').env('HIVE_CLIENT_ADDRESS'))
-  .option('--work-server [url]', 'location of the work server', 'http://localhost:4500/')
-  .option('--hive-endpoint [url]', 'endpoint of the target Hive instance', 'wss://dpow.pawmon.live/websocket')
+  .addOption(new Option('-a, --paw-address <address>', 'PAW address that rewards will be paid to').env('HIVE_PAW_ADDRESS').makeOptionMandatory())
+  .addOption(new Option('-p, --ws-port [port]', 'port of the work-server').default('4500').env('HIVE_WS_PORT'))
+  .addOption(new Option('-w, --ws-url [url]', 'overwrite location of the work-server').env('HIVE_WS_URL').conflicts('wsPort'))
+  .addOption(new Option('--hive-socket [url]').default('wss://dpow.pawmon.live/websocket').hideHelp())
   .action(clientHandler);
 
 program.command('proxy')

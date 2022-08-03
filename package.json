@@ -7,7 +7,7 @@
   "bin": "./src/cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:client": "nodemon src/cli.js client --hive-endpoint ws://localhost:4000/websocket",
+    "dev:client": "nodemon src/cli.js client --hive-socket ws://localhost:4000/websocket",
     "dev:proxy": "nodemon src/cli.js proxy --hive-endpoint http://localhost:4000/service"
   },
   "keywords": [],

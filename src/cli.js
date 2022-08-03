@@ -27,4 +27,6 @@ program.command('proxy')
   .addOption(new Option('--hive-endpoint [url]').default('https://dpow.pawmon.live/service').hideHelp())
   .action(proxyHandler);
 
+program.showHelpAfterError('check `hive-cli help client` and `hive-cli help proxy`');
+
 program.parse();

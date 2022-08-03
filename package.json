@@ -3,7 +3,8 @@
   "type": "module",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/cli.js",
+  "bin": "./src/cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:client": "nodemon src/cli.js client --hive-endpoint ws://localhost:4000/websocket",

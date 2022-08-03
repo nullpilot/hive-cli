@@ -22,6 +22,7 @@ program.command('client')
 program.command('proxy')
   .description('Server that accepts RPC work requests and forwards them to Hive DPoW')
   .addOption(new Option('-s, --service <id>', 'Hive service ID').env('HIVE_SERVICE_ID').makeOptionMandatory())
+  .addOption(new Option('-p, --proxy-port [port]', 'port to start the proxy server on').default('4501').env('HIVE_PROXY_PORT'))
   .addOption(new Option('-k, --api-key <key>', 'Hive API key').env('HIVE_API_KEY').makeOptionMandatory())
   .addOption(new Option('--hive-endpoint [url]').default('https://dpow.pawmon.live/service').hideHelp())
   .action(proxyHandler);

@@ -11,14 +11,15 @@ export default function proxyHandler(options) {
   serviceId = options.service;
   apiKey = options.apiKey;
   hiveEndpoint = options.hiveEndpoint;
-  fastify = startServer();
+  fastify = startServer(options.proxyPort);
 
-  process.stdout.write(`Forwarding to Hive DPoW as ${serviceId}\n`);
+  process.stdout.write(`Service ID set to ${serviceId}\n`);
+  process.stdout.write(`Forwarding requests to Hive DPoW at ${hiveEndpoint}\n`);
 }
 
-function startServer(port = 4501) {
+function startServer(port) {
   fastify = Fastify({
-    logger: true
+    logger: false
   })
 
   fastify.addContentTypeParser(/.*/, { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore'))
@@ -41,7 +42,10 @@ function startServer(port = 4501) {
 
   fastify.listen({ port: port }, (err, address) => {
     if (err) throw err
+
     // Server is now listening on ${address}
+    process.stdout.write(`Proxy server listening at ${address}/\n`);
+    process.stdout.write(`Ready to send work requests to the hive 🐝\n`);
   })
 
   return fastify;

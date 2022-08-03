@@ -6,13 +6,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:client": "nodemon src/cli.js client --hive-endpoint ws://localhost:4000/websocket"
+    "dev:client": "nodemon src/cli.js client --hive-endpoint ws://localhost:4000/websocket",
+    "dev:proxy": "nodemon src/cli.js proxy --hive-endpoint http://localhost:4000/service"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "commander": "^9.4.0",
+    "fastify": "^4.3.0",
     "got": "^12.3.0",
     "ws": "^8.8.1"
   },

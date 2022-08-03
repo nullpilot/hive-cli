@@ -2,6 +2,7 @@ import { Command, Option } from 'commander';
 const program = new Command();
 
 import clientHandler from './client.js';
+import proxyHandler from './proxy.js';
 
 program
   .name('hive-cli')
@@ -14,5 +15,12 @@ program.command('client')
   .option('--work-server [url]', 'location of the work server', 'http://localhost:4500/')
   .option('--hive-endpoint [url]', 'endpoint of the target Hive instance', 'wss://dpow.pawmon.live/websocket')
   .action(clientHandler);
+
+program.command('proxy')
+  .description('Server that accepts RPC work requests and forwards them to Hive DPoW')
+  .addOption(new Option('--service <id>', 'Hive service ID').env('HIVE_SERVICE_ID'))
+  .addOption(new Option('--api-key <key>', 'Hive API key').env('HIVE_API_KEY'))
+  .option('--hive-endpoint [url]', 'endpoint of the target Hive instance', 'https://dpow.pawmon.live/service')
+  .action(proxyHandler);
 
 program.parse();

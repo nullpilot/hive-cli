@@ -21,6 +21,8 @@ function startServer(port = 4501) {
     logger: true
   })
 
+  fastify.addContentTypeParser(/.*/, { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore'))
+
   // Declare a route
   fastify.post('/', (request, reply) => {
     switch(request.body.action) {

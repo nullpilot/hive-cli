@@ -48,6 +48,10 @@ function handleEvent(action, data) {
       return handleSubscribe(data);
     case "work_generate":
       return handleWorkGenerate(data);
+    case "work_accept":
+      return handleWorkAccept(data);
+    case "work_reject":
+      return handleWorkAccept(data);
     case "work_cancel":
       return handleWorkCancel(data)
     default:
@@ -61,6 +65,18 @@ function handleSubscribe(data) {
 
 function handleWorkGenerate(data) {
   requestWork(data)
+}
+
+function handleWorkAccept(data) {
+  const date = new Date()
+  const dateStr = date.toLocaleTimeString('en-GB', {
+    timeZone: 'UTC'
+  })
+
+  console.log(`[${dateStr}] Work accepted. Reward: ${data.reward} ${data.rewardUnit}`)
+}
+
+function handleWorkReject(data) {
 }
 
 function handleWorkCancel(data) {

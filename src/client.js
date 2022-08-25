@@ -1,10 +1,17 @@
 import WebSocket from 'ws';
 import got from 'got';
 
+// the backend sends pings every 30s
+const KEEPALIVE_TIMEOUT = 40 * 1000;
+
 let workServer;
 let hiveSocket;
 let pawAddress;
 let ws;
+
+let connected = false;
+let timeoutId = 0;
+let retryAttempt = 0;
 
 export default function clientHandler(options) {
   pawAddress = options.pawAddress;
@@ -16,15 +23,26 @@ export default function clientHandler(options) {
     workServer = `http://localhost:${options.wsPort}/`
   }
 
+  connect()
+
+  process.stdout.write(`Reward address set to ${pawAddress}\n`);
+  process.stdout.write(`Connecting to Hive DPoW at ${hiveSocket}\n`);
+  process.stdout.write(`Forwarding PoW requests to work-server at ${workServer}\n`);
+}
+
+function connect() {
   ws = new WebSocket(hiveSocket);
 
   ws.on('open', function open() {
-    const init = {action: "work_subscribe"}
-
-    process.stdout.write(`Successfully joined the hive 🐝\n`);
-
-    ws.send(JSON.stringify(init));
+    connected = true
+    retryAttempt = 0
+    heartbeat()
+    ws.send(JSON.stringify({action: "work_subscribe"}));
   });
+
+  ws.on('ping', () => {
+    heartbeat()
+  })
 
   ws.on('message', function message(msg) {
     try {
@@ -37,9 +55,44 @@ export default function clientHandler(options) {
     }
   });
 
-  process.stdout.write(`Reward address set to ${pawAddress}\n`);
-  process.stdout.write(`Connecting to Hive DPoW at ${hiveSocket}\n`);
-  process.stdout.write(`Forwarding PoW requests to work-server at ${workServer}\n`);
+  ws.on('error', (err) => {
+    if(err.code === 'ECONNREFUSED') {
+      console.warn('Host refused connection. Hive may be down.')
+    } else {
+      console.warn('Connection failed.', err.message || err)
+    }
+  })
+
+  ws.on('close', () => {
+    const delay = Math.min(120000, Math.pow(2, Math.floor(retryAttempt / 2)) * 5000)
+    const seconds = Math.floor(delay / 1000)
+
+    clearTimeout(timeoutId);
+
+    if(connected) {
+      console.log('Connection was closed.')
+      terminate()
+    }
+
+    console.info(`Retrying connection in ${seconds} seconds.`)
+
+    timeoutId = setTimeout(() => {
+      connect()
+      retryAttempt++
+    }, delay - 500 + Math.random() * 1000)
+  })
+}
+
+function terminate() {
+  connected = false
+  ws.terminate()
+}
+
+function heartbeat() {
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(() => {
+    terminate()
+  }, KEEPALIVE_TIMEOUT)
 }
 
 function handleEvent(action, data) {
@@ -60,6 +113,7 @@ function handleEvent(action, data) {
 }
 
 function handleSubscribe(data) {
+  process.stdout.write(`Successfully joined the hive 🐝\n`);
   data.queue.forEach(requestWork)
 }
 

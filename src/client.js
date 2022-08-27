@@ -44,14 +44,14 @@ function connect() {
     heartbeat()
   })
 
-  ws.on('message', function message(msg) {
+  ws.on('message', async function message(msg) {
     try {
       const data = JSON.parse(msg)
       const action = data.action
 
-      handleEvent(action, data)
+      await handleEvent(action, data)
     } catch(e) {
-      console.error(e)
+      console.error(e.message || err)
     }
   });
 
@@ -114,11 +114,11 @@ function handleEvent(action, data) {
 
 function handleSubscribe(data) {
   process.stdout.write(`Successfully joined the hive 🐝\n`);
-  data.queue.forEach(requestWork)
+  return data.queue.map(requestWork)
 }
 
 function handleWorkGenerate(data) {
-  requestWork(data)
+  return requestWork(data)
 }
 
 function handleWorkAccept(data) {
@@ -134,7 +134,7 @@ function handleWorkReject(data) {
 }
 
 function handleWorkCancel(data) {
-  const req = got.post(workServer, {
+  return got.post(workServer, {
     json: {
       action: 'work_cancel',
       hash: data.hash
@@ -150,6 +150,7 @@ async function requestWork(data) {
       difficulty: data.difficulty
     }
   }).json()
+
   const res = await req;
 
   if(res.error) {
